@@ -1,6 +1,12 @@
 #pragma once
 
-/* MimiClaw Global Configuration */
+/* MimiClaw Global Configuration
+ *
+ * Target board: Waveshare ESP32-P4 Nano
+ *   Main SoC : ESP32-P4  (dual-core Xtensa LX9, 400 MHz, ~768 KB SRAM, 32 MB PSRAM)
+ *   RF module: ESP32-C6  (WiFi 6 + BLE 5 via SDIO, runs esp_hosted slave firmware)
+ *   Flash    : 16 MB
+ */
 
 /* Build-time secrets (highest priority, override NVS) */
 #if __has_include("mimi_secrets.h")
@@ -55,7 +61,7 @@
 /* Telegram Bot */
 #define MIMI_TG_POLL_TIMEOUT_S       30
 #define MIMI_TG_MAX_MSG_LEN          4096
-#define MIMI_TG_POLL_STACK           (12 * 1024)
+#define MIMI_TG_POLL_STACK           (16 * 1024)
 #define MIMI_TG_POLL_PRIO            5
 #define MIMI_TG_POLL_CORE            0
 #define MIMI_TG_CARD_SHOW_MS         3000
@@ -63,15 +69,17 @@
 
 /* Feishu Bot */
 #define MIMI_FEISHU_MAX_MSG_LEN          4096
-#define MIMI_FEISHU_POLL_STACK           (12 * 1024)
+#define MIMI_FEISHU_POLL_STACK           (16 * 1024)
 #define MIMI_FEISHU_POLL_PRIO            5
 #define MIMI_FEISHU_POLL_CORE            0
 #define MIMI_FEISHU_WEBHOOK_PORT         18790
 #define MIMI_FEISHU_WEBHOOK_PATH         "/feishu/events"
 #define MIMI_FEISHU_WEBHOOK_MAX_BODY     (16 * 1024)
 
-/* Agent Loop */
-#define MIMI_AGENT_STACK             (24 * 1024)
+/* Agent Loop
+ * P4 has ~768 KB internal SRAM; 32 KB agent stack avoids the allocation
+ * fallback chain that was needed on S3 (24→12 KB). */
+#define MIMI_AGENT_STACK             (32 * 1024)
 #define MIMI_AGENT_PRIO              6
 #define MIMI_AGENT_CORE              1
 #define MIMI_AGENT_MAX_HISTORY       20
@@ -94,8 +102,8 @@
 #define MIMI_LLM_LOG_PREVIEW_BYTES   160
 
 /* Message Bus */
-#define MIMI_BUS_QUEUE_LEN           16
-#define MIMI_OUTBOUND_STACK          (12 * 1024)
+#define MIMI_BUS_QUEUE_LEN           32
+#define MIMI_OUTBOUND_STACK          (16 * 1024)
 #define MIMI_OUTBOUND_PRIO           5
 #define MIMI_OUTBOUND_CORE           0
 
@@ -128,7 +136,7 @@
 #define MIMI_WS_MAX_CLIENTS          4
 
 /* Serial CLI */
-#define MIMI_CLI_STACK               (4 * 1024)
+#define MIMI_CLI_STACK               (8 * 1024)
 #define MIMI_CLI_PRIO                3
 #define MIMI_CLI_CORE                0
 

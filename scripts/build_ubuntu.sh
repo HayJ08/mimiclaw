@@ -17,5 +17,5 @@ fi
 . "$IDF_DIR/export.sh"
 
 cd "$PROJECT_ROOT"
-idf.py set-target esp32s3
+idf.py set-target esp32p4
 idf.py build

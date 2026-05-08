@@ -1,0 +1,46 @@
+# MimiClaw - ESP32-P4 Target Configuration (Waveshare ESP32-P4 Nano)
+# WiFi/BT provided by ESP32-C6 coprocessor via SDIO (esp_hosted)
+CONFIG_IDF_TARGET="esp32p4"
+
+# Flash 16MB QIO
+CONFIG_ESPTOOLPY_FLASHSIZE_16MB=y
+CONFIG_ESPTOOLPY_FLASHMODE_QIO=y
+
+# CPU 400MHz (P4 supports up to 400MHz on both cores)
+CONFIG_ESP_DEFAULT_CPU_FREQ_MHZ_400=y
+
+# PSRAM 32MB (Waveshare P4 Nano onboard PSRAM via dedicated P4 interface)
+# P4 does not use OCT-SPI PSRAM mode - that was S3-specific
+CONFIG_SPIRAM=y
+CONFIG_SPIRAM_MALLOC_ALWAYSINTERNAL=4096
+CONFIG_SPIRAM_MALLOC_RESERVE_INTERNAL=131072
+CONFIG_SPIRAM_MEMTEST=n
+
+# TLS: allocate buffers in PSRAM to preserve internal SRAM
+CONFIG_MBEDTLS_EXTERNAL_MEM_ALLOC=y
+CONFIG_MBEDTLS_DYNAMIC_FREE_CONFIG_DATA=y
+CONFIG_MBEDTLS_SSL_IN_CONTENT_LEN=16384
+CONFIG_MBEDTLS_SSL_OUT_CONTENT_LEN=4096
+
+# WebSocket support (required by ws_server and feishu_bot)
+CONFIG_HTTPD_WS_SUPPORT=y
+
+# Custom partition table
+CONFIG_PARTITION_TABLE_CUSTOM=y
+CONFIG_PARTITION_TABLE_CUSTOM_FILENAME="partitions.csv"
+
+# Console: UART0
+# P4 does not have USB Serial/JTAG like S3.
+# Use USB-to-UART adapter on TX0/RX0, or switch to USB_CDC_ACM if using USB-OTG.
+CONFIG_ESP_CONSOLE_UART_DEFAULT=y
+
+# esp_hosted: WiFi/BT via ESP32-C6 coprocessor over SDIO
+# The C6 must be pre-flashed with the esp_hosted slave firmware.
+# VERIFY these GPIO pins against the Waveshare ESP32-P4 Nano schematic before flashing.
+CONFIG_ESP_HOSTED_TRANSPORT_SDIO=y
+CONFIG_ESP_HOSTED_SDIO_CLK_GPIO=18
+CONFIG_ESP_HOSTED_SDIO_CMD_GPIO=19
+CONFIG_ESP_HOSTED_SDIO_D0_GPIO=14
+CONFIG_ESP_HOSTED_SDIO_D1_GPIO=15
+CONFIG_ESP_HOSTED_SDIO_D2_GPIO=16
+CONFIG_ESP_HOSTED_SDIO_D3_GPIO=17

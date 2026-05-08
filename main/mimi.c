@@ -8,6 +8,9 @@
 #include "esp_heap_caps.h"
 #include "esp_spiffs.h"
 #include "nvs_flash.h"
+#if CONFIG_ESP_HOSTED_ENABLED
+#include "esp_hosted.h"
+#endif
 
 #include "mimi_config.h"
 #include "bus/message_bus.h"
@@ -108,7 +111,8 @@ void app_main(void)
     esp_log_level_set("esp-x509-crt-bundle", ESP_LOG_WARN);
 
     ESP_LOGI(TAG, "========================================");
-    ESP_LOGI(TAG, "  MimiClaw - ESP32-S3 AI Agent");
+    ESP_LOGI(TAG, "  MimiClaw - ESP32-P4 AI Agent");
+    ESP_LOGI(TAG, "  RF: ESP32-C6 (WiFi6/BLE via esp_hosted)");
     ESP_LOGI(TAG, "========================================");
 
     /* Print memory info */
@@ -120,6 +124,13 @@ void app_main(void)
     /* Phase 1: Core infrastructure */
     ESP_ERROR_CHECK(init_nvs());
     ESP_ERROR_CHECK(esp_event_loop_create_default());
+
+#if CONFIG_ESP_HOSTED_ENABLED
+    /* Init esp_hosted before WiFi: brings up SDIO link to C6 coprocessor */
+    ESP_LOGI(TAG, "Starting esp_hosted (C6 RF module over SDIO)...");
+    ESP_ERROR_CHECK(esp_hosted_init());
+#endif
+
     ESP_ERROR_CHECK(init_spiffs());
 
     /* Initialize subsystems */
